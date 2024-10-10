@@ -43,7 +43,7 @@ ax2.errorbar(sim_df['alphas'],sim_df['v_mean'],yerr =sim_df['v_std'],fmt = 'k.',
 ax2.plot(rs_df['alphas'],rs_df['v'],'r-')
 ax2.set_ylabel(r'$v_n$')
 ax2.set_xlim(left = min(rs_df['alphas']), right = 3.0)
-# ax2.set_xlabel(r'$\alpha$')
+ax2.set_xlabel(r'$\alpha$')
 
 plt.savefig(directory+'simple_sim_v_and_w' + fmt +'method_'+method+'.png')
 
