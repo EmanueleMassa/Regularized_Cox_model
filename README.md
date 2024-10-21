@@ -2,7 +2,7 @@
 
 This repository contains the scripts used in the manuscript "Observable asymptotics of regularized Cox regression models with standard gaussian designs : a statistical mechanics approach".
 
-In order to run the python scripts in the main directory you need to have installed 'routines' as a subdirectory. 
+Once you have downloaded this repository, you can run the python code from the top level of the directory (you need to have 'routines' as a subdirectory). 
 
 | File                          | Description                                                                                                                                                    |
 |-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
