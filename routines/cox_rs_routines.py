@@ -46,7 +46,7 @@ class rs_cox:
                                   (1-self.delta) * Q(x2) )/ (1.0 + self.eta * hat_tau0)
             f =  (self.delta * (Q(x1) * (1.0 / x1**2 + 1) - G(x1) / x1) + 
                   (1-self.delta) * (Q(x2)* ( 1.0 /x2**2+1) - G(x2)/x2))
-            v = np.sqrt( 2 * (self.alpha * hat_tau0)**2 * f/ (1+self.eta*hat_tau0)**2 - w**2)
+            v = np.sqrt(max( 2 * (self.alpha * hat_tau0)**2 * f/ (1+self.eta*hat_tau0)**2 - w**2,0 ))
             y = tau * self.c + w * self.z0 + v * self.q
             chi = np.array(vl(tau * H0 * np.exp(y)),float)
             xi =  y - chi 
