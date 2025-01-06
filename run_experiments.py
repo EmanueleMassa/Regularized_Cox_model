@@ -7,7 +7,7 @@ import pandas as pd
 #number of covariates
 p = 2000
 #overfitting ratio
-zeta = 2.0
+zeta = 1.0
 #number of covariates
 n = int(p / zeta)
 #sparsity

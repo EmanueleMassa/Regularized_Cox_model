@@ -17,7 +17,7 @@ def run_rs(values, ratio, delta, zeta, gm, m):
         res = np.array([values[l], cox_rs.w, cox_rs.v, cox_rs.tau, cox_rs.hat_w, cox_rs.hat_v, cox_rs.hat_tau], float)
         print(res)
         metrics[l,:] = res
-    df = pd.DataFrame(metrics, columns=['alphas', 'w', 'v', 'tau', 'hat_w', 'hat_v', 'hat_tau'])
+    df = pd.DataFrame(metrics, columns=['vals', 'w', 'v', 'tau', 'hat_w', 'hat_v', 'hat_tau'])
     return df
     
 
@@ -62,7 +62,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
         print('total elapsed time = ' + str((big_toc-big_tic)/60))
 
     data = {
-        'alphas' : values,
+        'vals' : values,
         'w_mean' : np.mean(w, axis = 0),
         'w_std' : np.std(w, axis = 0),
         'v_mean' : np.mean(v, axis = 0),

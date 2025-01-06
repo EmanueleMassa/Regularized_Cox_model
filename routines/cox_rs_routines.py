@@ -76,15 +76,6 @@ class rs_cox:
         self.tau = tau
         self.xi = xi
         return 
-
-
-    def supp_rec(self, eps):
-        x1 = self.alpha * self.hat_tau/np.sqrt(self.hat_w**2/self.delta + self.hat_v**2)
-        x2 = self.alpha * self.hat_tau/self.hat_v
-        e1 = 1-2* Q(x1 *(1 + eps*(1+1+self.eta*self.hat_tau)/(self.alpha * self.hat_tau)))
-        e2 = 2* Q(x2 *(1 + eps*(1+1+self.eta*self.hat_tau)/(self.alpha * self.hat_tau)))
-        spars = (1-self.delta) * e2 + self.delta * (1 - e1)
-        return self.delta * e1, (1-self.delta) * e2, spars
     
 
 class gauss_model:

@@ -21,7 +21,7 @@ def configuration_AMP(p, zeta, nu, theta0):
 
 p = 2000
 zeta = 2.0
-nu = 0.005
+nu = 0.01
 theta0 = 1.0
 phi0 = -np.log(2)
 rho0 = 2.0
@@ -60,7 +60,7 @@ mse = np.sqrt(np.sum((betas_cd - betas_amp)**2, axis = 1))/ np.sqrt(np.sum((beta
 plt.figure()
 plt.title('relative L2 distance AMP vs CD')
 plt.plot(vals, mse, 'r-')
-plt.xlabel(r'$\alpha$')
+plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
 plt.savefig('figures/error_AMP_CD.png')
 
@@ -71,7 +71,7 @@ plt.plot(vals, betas_cd, 'b-')
 for j in range(len(flags_amp)):
     if(flags_amp[j]!=True):
         plt.axvline(x = vals[j])
-plt.xlabel(r'$\alpha$')
+plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
 plt.savefig('figures/elbow_plot.png')
 
@@ -80,7 +80,7 @@ plt.figure()
 plt.title('C index train ')
 plt.plot(vals, train_err_amp, 'r-')
 plt.plot(vals, train_err_cd, 'b-')
-plt.xlabel(r'$\alpha$')
+plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
 plt.savefig('figures/c_ind_train.png')
 
@@ -88,8 +88,24 @@ plt.figure()
 plt.title('C index test ')
 plt.plot(vals, test_err_amp, 'r-')
 plt.plot(vals, test_err_cd, 'b-')
-plt.xlabel(r'$\alpha$')
+plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
 plt.savefig('figures/c_ind_test.png')
 
+fig = plt.figure()
+ax1 = fig.add_subplot(211)
+ax2 = fig.add_subplot(212)
+
+ax1.plot(vals, betas_amp, 'r-')
+ax1.plot(vals, betas_cd, 'b-')
+# ax1.set_xlabel(r'$\rho$', fontsize = 10)
+ax1.set_xlim(left = min(vals), right = 5.0)
+ax1.set_ylabel(r'$\mathbf{\beta}$', fontsize = 10)
+
+ax2.plot(vals, test_err_amp, 'r-')
+ax2.plot(vals, test_err_cd, 'b-')
+ax2.set_xlabel(r'$\rho$', fontsize = 10)
+ax2.set_xlim(left = min(vals), right = 5.0)
+ax2.set_ylabel(r'${\rm HC}_{test}$', fontsize = 10)
+plt.savefig('figures/elbow_and_c_ind_test.png')
 plt.show()

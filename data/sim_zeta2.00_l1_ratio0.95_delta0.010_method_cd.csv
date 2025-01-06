@@ -1,4 +1,4 @@
-alphas,w_mean,w_std,v_mean,v_std,tau_mean,tau_std,hat_w_mean,hat_w_std,hat_v_mean,hat_v_std,hat_tau_mean,hat_tau_std
+vals,w_mean,w_std,v_mean,v_std,tau_mean,tau_std,hat_w_mean,hat_w_std,hat_v_mean,hat_v_std,hat_tau_mean,hat_tau_std
 4.0,,,,,0.001408450442339459,0.0009843579481916814,,,,,,
 3.916858388984005,,,,,0.0016385497778601168,0.0010785813445395103,,,,,,
 3.835444909838595,,,,,0.0018723203200811023,0.001018195667664221,,,,,,
