@@ -36,7 +36,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
 
     if(parallel_flag):
         tic = time.time()
-        results = Parallel(n_jobs=12)(delayed(experiment)(counter, GM, cox_m, method, n) for counter in range(m))
+        results = Parallel(n_jobs=24)(delayed(experiment)(counter, GM, cox_m, method, n) for counter in range(m))
         t_df = pd.DataFrame(results)
         w = np.stack(t_df.iloc[:, 0].to_numpy())
         v = np.stack(t_df.iloc[:, 1].to_numpy())

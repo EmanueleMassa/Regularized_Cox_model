@@ -48,9 +48,9 @@ rs_df.to_csv('data/rs' + fmt + '.csv', index = False)
 
 # #simulate the data and perform regressions with COX - AMP
 m = 50 #number of repetitions to compute average
-amp_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'amp', m)
+amp_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'amp', m, True)
 amp_sim_df.to_csv('data/sim' + fmt + '_method_amp.csv', index = False)
 
 #simulate the data and perform regressions with COX - CD
-cd_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'cd', m)
+cd_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'cd', m, True)
 cd_sim_df.to_csv('data/sim' + fmt + '_method_cd.csv', index = False)
