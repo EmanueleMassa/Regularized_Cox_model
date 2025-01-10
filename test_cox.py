@@ -21,15 +21,15 @@ def configuration_AMP(p, zeta, nu, theta0):
 
 p = 2000
 zeta = 2.0
-nu = 0.01
+nu = 0.001
 theta0 = 1.0
 phi0 = -np.log(2)
 rho0 = 2.0
 tau1 = 1.0
 tau2 = 2.0
 mu0 = np.zeros(p)
-vals = np.exp(np.linspace(np.log(10.0), np.log(0.5), 100))
-ratio = 0.95
+vals = np.exp(np.linspace(np.log(10.0), np.log(0.1), 100))
+ratio = 1.0
 
 beta0, A0, n = configuration_AMP(p, zeta, nu, theta0)
 
@@ -39,7 +39,7 @@ T_test, C_test, X_test = gen_mod.gen(n)
 
 #fit with Cox AMP
 coxm = cox_model(p, vals, ratio)
-coxm.fit(T, C, X, 'amp', eps = 0.5, verb_flag= True)
+coxm.fit(T, C, X, 'amp', eps = 0.9, tolerance = 1.0e-8, verb_flag= True)
 betas_amp = coxm.betas
 flags_amp = coxm.flags
 coxm.compute_Harrel_c_train()
@@ -98,6 +98,9 @@ ax2 = fig.add_subplot(212)
 
 ax1.plot(vals, betas_amp, 'r-')
 ax1.plot(vals, betas_cd, 'b-')
+for j in range(len(flags_amp)):
+    if(flags_amp[j]!=True):
+        ax1.axvline(x = vals[j])
 # ax1.set_xlabel(r'$\rho$', fontsize = 10)
 ax1.set_xlim(left = min(vals), right = 5.0)
 ax1.set_ylabel(r'$\mathbf{\beta}$', fontsize = 10)

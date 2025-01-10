@@ -6,10 +6,6 @@ from experiments_routines import run_rs, run_sim, isotropic_setting
 import pandas as pd 
 #number of covariates
 p = 2000
-#overfitting ratio
-zeta = 1.0
-#number of covariates
-n = int(p / zeta)
 #sparsity
 delta = 0.01
 #signal strength 
@@ -32,25 +28,26 @@ data_gen_process = surv_models(A0, beta0, phi0, rho0, tau1, tau2, model)
 gauss_process = gauss_model(theta0, phi0, rho0, tau1, tau2, model)
 
 #lambda values  
-values = np.exp(np.linspace(np.log(10.0), np.log(0.5), 100))
-#l1_ratio
-ratio = 0.75
+values = np.exp(np.linspace(np.log(10.0), np.log(0.2), 100))
 
-#label for the csv files
-fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio) 
-fmt = fmt + '_delta' + "{:.3f}".format(delta)
+for ratio in [1.0]:
+    for zeta in [2.0, 1.0, 0.5]:
+        #number of observations
+        n = int(p / zeta)
+        #label for the csv files
+        fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio) + '_delta' + "{:.3f}".format(delta)
 
-#solve the rs equations
-m = 5000   #population size
-rs_df = run_rs(values, ratio, delta, zeta, gauss_process, m)
-rs_df.to_csv('data/rs' + fmt + '.csv', index = False)
+        #solve the rs equations
+        m = 5000 #population size
+        rs_df = run_rs(values, ratio, delta, zeta, gauss_process, m)
+        rs_df.to_csv('data/rs' + fmt + '.csv', index = False)
 
 
-# #simulate the data and perform regressions with COX - AMP
-m = 50 #number of repetitions to compute average
-amp_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'amp', m, True)
-amp_sim_df.to_csv('data/sim' + fmt + '_method_amp.csv', index = False)
+        # #simulate the data and perform regressions with COX - AMP
+        m = 20 #number of repetitions to compute average
+        amp_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'amp', m, True)
+        amp_sim_df.to_csv('data/sim' + fmt + '_method_amp.csv', index = False)
 
-#simulate the data and perform regressions with COX - CD
-cd_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'cd', m, True)
-cd_sim_df.to_csv('data/sim' + fmt + '_method_cd.csv', index = False)
+        #simulate the data and perform regressions with COX - CD
+        cd_sim_df = run_sim(p, n, values, ratio, data_gen_process, 'cd', m, True)
+        cd_sim_df.to_csv('data/sim' + fmt + '_method_cd.csv', index = False)

@@ -29,6 +29,8 @@ class rs_cox:
         self.alpha = 0.0
         self.eta = 0.0
         self.H = na_est(self.c, np.ones(self.m))
+        self.theta0 = gm.theta
+        self.dg0 = gm.ch(self.t) * np.exp(self.theta0 * self.z0) - self.c
 
     
     def solve(self, damp = 0.5):
@@ -39,22 +41,23 @@ class rs_cox:
         hat_tau0 = self.hat_tau
         H0 = self.H
         while(err>1.0e-8):
-            x1 = self.alpha * hat_tau0/np.sqrt(hat_w0**2 / self.delta + hat_v0**2)
-            x2 = self.alpha * hat_tau0/hat_v0
-            w = 2 * hat_w0 * Q(x1)/ (1.0 + self.eta * hat_tau0)
+            x1 = self.alpha * hat_tau0 / np.sqrt(hat_w0**2 / self.delta + hat_v0**2)
+            x2 = self.alpha * hat_tau0 / hat_v0
+            w = 2 * hat_w0 * Q(x1) / (1.0 + self.eta * hat_tau0)
             tau = 2 * hat_tau0 * (self.delta * Q(x1) + 
                                   (1-self.delta) * Q(x2) )/ (1.0 + self.eta * hat_tau0)
             f =  (self.delta * (Q(x1) * (1.0 / x1**2 + 1) - G(x1) / x1) + 
-                  (1-self.delta) * (Q(x2)* ( 1.0 /x2**2+1) - G(x2)/x2))
-            v = np.sqrt(max( 2 * (self.alpha * hat_tau0)**2 * f/ (1+self.eta*hat_tau0)**2 - w**2,0 ))
+                  (1-self.delta) * (Q(x2)* ( 1.0 /x2**2 + 1) - G(x2) / x2))
+            v = np.sqrt(max( 2 * (self.alpha * hat_tau0)**2 * f/ (1 + self.eta * hat_tau0)**2 - w**2, 0 ))
             y = tau * self.c + w * self.z0 + v * self.q
             chi = np.array(vl(tau * H0 * np.exp(y)),float)
             xi =  y - chi 
-            hess = H0 * np.exp(xi)
-            g = np.mean(tau * hess/(1.0 + tau * hess))
-            hat_tau1 = self.zeta * tau / g
-            hat_w1 = w + np.mean(self.z0 * (tau * self.c-chi))/g
-            hat_v1 = np.sqrt(self.zeta*np.mean((self.c*tau - chi)**2)/(g*g))
+            exi =np.exp(xi)
+            ddg_xi = H0 * exi
+            dg_xi = ddg_xi - self.c
+            hat_tau1 = self.zeta  / np.mean(ddg_xi / (1.0 + tau * ddg_xi))
+            hat_w1 = self.theta0 * hat_tau0 * np.mean(dg_xi * self.dg0) / self.zeta
+            hat_v1 = hat_tau0 * np.sqrt(np.mean(dg_xi ** 2) / self.zeta)
             H1 = na_est(self.c, np.exp(xi))
             hat_w = damp * hat_w1 + (1.0 - damp) * hat_w0
             hat_v = damp * hat_v1 + (1.0 - damp) * hat_v0

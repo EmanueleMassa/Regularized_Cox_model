@@ -32,15 +32,16 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-8, verbose 
     p = len(beta0)
     n = len(c)
     zeta = p / n
+    elp =  np.exp(x @ beta0)
     tic = time.time()
     while(err >= tol and flag):
-        elp =  np.exp(x @ beta0)
         H = na_est(c, elp)
         hess = H * elp
         beta = cd_update(x, hess, c, alpha, eta, beta0)
-        err =  np.sqrt(sum((beta - beta0)**2))
+        elp =  np.exp(x @ beta)
+        err =  np.sqrt(sum((beta - beta0)**2) )
         beta0 = beta
-        its = its +1 
+        its = its + 1 
         if(np.isnan(err)):
             flag = False
             print('error is Nan')
@@ -50,7 +51,7 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-8, verbose 
                 print('CD not converged! alpha = '+str(alpha)+', error = ' + str(err))
     toc = time.time()
     if(flag and verbose):
-        print('CD alpha = '+str(alpha)+', time elapsed = '+str((toc-tic)/60) + ', its =' + str(its) )
+        print('CD alpha = ' + str(alpha) + ', time elapsed = ' + str((toc-tic)/60) + ', its =' + str(its) )
     av_norm0_beta = np.mean(np.array(np.abs(beta0) > 1.0e-8, int))
     tau = compute_tau(zeta * av_norm0_beta , hess, zeta * eta, tau0)
     hat_tau =  tau / (av_norm0_beta - eta * tau)

@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.random as rnd 
 from routines.cox_amp import amp_cox
 from routines.cox_cd import cd_cox, compute_tau
 from routines.funcs import c_index, na_est
@@ -12,7 +13,7 @@ class cox_model:
         self.etas = vals * (1.0 -ratio)
         self.l = len(vals)
 
-    def fit(self, t, c, x, method, eps = 0.5, verb_flag = False):
+    def fit(self, t, c, x, method, eps = 0.5, verb_flag = False, warm_start_amp = False, tolerance = 1.0e-8):
         idx = np.argsort(t)
         self.t = np.array(t)[idx]
         self.c = np.array(c,int)[idx]
@@ -23,6 +24,10 @@ class cox_model:
         tau = 0.0
         hat_tau = 0.0
         xi = self.x @ beta
+        beta_in = rnd.normal(loc = 0, scale = 1  / self.p, size = self.p)
+        xi_in = rnd.normal(loc = 0, scale = 1 / self.p, size = self.n)
+        hat_tau_in = rnd.normal(loc = 0, scale = 1 / self.p)
+        tau_in = rnd.normal(loc = 0, scale = 1 / self.p)        
         self.betas = np.zeros((self.l,self.p))
         self.flags = np.zeros(self.l)
         self.hat_taus = np.zeros(self.l)
@@ -35,9 +40,12 @@ class cox_model:
             eta = self.etas[j]
             alpha = self.alphas[j]
             if(method == 'cd'):
-                beta, hat_tau, tau, flag = cd_cox(eta, alpha, self.c, self.x, beta, tau, verbose = verb_flag)
+                beta, hat_tau, tau, flag = cd_cox(eta, alpha, self.c, self.x, beta, tau, tol = tolerance, verbose = verb_flag)
             if(method == 'amp'):
-                beta, xi, hat_tau, tau, flag = amp_cox(eta, alpha, self.c, self.x, beta, xi, tau, hat_tau, eps, verbose = verb_flag)
+                if(warm_start_amp):
+                    beta, xi, hat_tau, tau, flag = amp_cox(eta, alpha, self.c, self.x, beta, xi, tau, hat_tau, eps, tol = tolerance, verbose = verb_flag)
+                else:      
+                    beta, xi, hat_tau, tau, flag = amp_cox(eta, alpha, self.c, self.x, beta_in, xi_in, tau_in, hat_tau_in, eps, tol = tolerance, verbose = verb_flag)
             self.flags[j] = flag
             self.betas[j,:] = beta
             self.taus[j] = tau

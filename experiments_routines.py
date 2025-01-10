@@ -30,7 +30,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
         cox_m.fit(T, C, X, method, verb_flag = True)
         toc = time.time()
         print('experiment '+str(counter)+ ' time elapsed = '+str((toc-tic)/60))
-        return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus
+        return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus, cox_m.flags
     
     cox_m = cox_model(p, values, ratio)
 
@@ -44,6 +44,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
         hat_w = np.stack(t_df.iloc[:, 3].to_numpy())
         hat_v = np.stack(t_df.iloc[:, 4].to_numpy())
         hat_tau = np.stack(t_df.iloc[:, 5].to_numpy())
+        flags = np.stack(t_df.iloc[:, 6].to_numpy())
         toc = time.time()
         print('total elapsed time = ' + str((toc-tic)/60))
 
@@ -54,13 +55,15 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
         hat_w = np.zeros((m, len(values)))
         hat_v = np.zeros((m, len(values)))
         hat_tau = np.zeros((m, len(values)))
+        flags = np.zeros((m, len(values)))
 
         big_tic = time.time()
         for i in range(m):
-            w[i,:], v[i,:], tau[i,:], hat_w[i,:], hat_v[i,:], hat_tau[i,:] = experiment(i, GM, cox_m, method, n)
+            w[i,:], v[i,:], tau[i,:], hat_w[i,:], hat_v[i,:], hat_tau[i,:], flags[i,:] = experiment(i, GM, cox_m, method, n)
         big_toc = time.time()
         print('total elapsed time = ' + str((big_toc-big_tic)/60))
 
+    flags = np.array(flags, int)
     data = {
         'vals' : values,
         'w_mean' : np.mean(w, axis = 0),
@@ -74,7 +77,9 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
         'hat_v_mean' : np.mean(hat_v, axis = 0),
         'hat_v_std' : np.std(hat_v, axis = 0),
         'hat_tau_mean' : np.mean(hat_tau, axis = 0),
-        'hat_tau_std' : np.std(hat_tau, axis = 0)
+        'hat_tau_std' : np.std(hat_tau, axis = 0),
+        'flags_mean' : np.mean(flags, axis = 0),
+        'flags_std' : np.std(flags, axis = 0)
     }
     df = pd.DataFrame(data)
     return df 

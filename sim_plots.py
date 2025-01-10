@@ -4,10 +4,10 @@ import pandas as pd
 
 zeta = 1.0
 theta0 = 1.0
-ratio = 0.75
+ratio = 1.0
 delta = 0.01
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio)+ '_delta' + "{:.3f}".format(delta)
-method = 'cd'
+method = 'amp'
 
 rs_df = pd.read_csv('data/rs'+fmt+'.csv')
 sim_df = pd.read_csv('data/sim'+fmt+'_method_'+method+'.csv')
@@ -115,4 +115,9 @@ ax6.set_xlabel(r'$\rho$', fontsize = 10)
 plt.savefig(directory+'all_order_parameters' + fmt +'method_'+method+'.jpg')
 
 
+if(method == 'amp'):
+    plt.figure()
+    plt.errorbar(sim_df['vals'],sim_df['flags_mean'],yerr =sim_df['flags_std'],fmt = 'k.', capsize = 3)
+    # plt.xlim(left = 0, right = 1.0)
+    plt.savefig(directory+'flags' + fmt +'amp.jpg')
 plt.show()
