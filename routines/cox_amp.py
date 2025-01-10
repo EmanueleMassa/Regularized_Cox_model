@@ -25,7 +25,7 @@ def gamp_cox_update(zeta, eta, alpha, C, X, beta0, xi0, hat_tau0, tau0, H0, eps)
     return beta, xi, hat_tau, tau, H
 
 
-def amp_cox(eta, alpha, C, X, beta0, xi0, tau0, hat_tau0, eps, max_its = 300, tol = 1.0e-8, verbose = False):
+def amp_cox(eta, alpha, C, X, beta0, xi0, tau0, hat_tau0, eps, max_its = 1000, tol = 1.0e-8, verbose = False):
     n = len(C)
     p = len(beta0)
     zeta =  p / n
@@ -33,10 +33,14 @@ def amp_cox(eta, alpha, C, X, beta0, xi0, tau0, hat_tau0, eps, max_its = 300, to
     flag = True
     its = 0
     err = 1.0
+    err0 = err
     tic = time.time()
     while(err>= tol and flag):
         beta, xi, hat_tau, tau, H = gamp_cox_update(zeta, eta, alpha, C, X, beta0, xi0, hat_tau0, tau0, H0, eps)
         err = np.sqrt( sum((beta - beta0)**2)+ sum((xi-xi0)**2)+ (tau - tau0)**2 + (hat_tau - hat_tau0)**2)
+        if(err > err0):
+            eps = eps * 0.5
+        err0 = err
         beta0 = beta
         tau0 = tau
         hat_tau0 = hat_tau

@@ -21,13 +21,13 @@ def run_rs(values, ratio, delta, zeta, gm, m):
     return df
     
 
-def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False):
+def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol = 1.0e-7):
 
     def experiment(counter, GM, cox_m, method, n):
         tic = time.time()
         #generate data
         T, C, X = GM.gen(n)
-        cox_m.fit(T, C, X, method, verb_flag = True)
+        cox_m.fit(T, C, X, method, verb_flag = True, tolerance = fit_tol)
         toc = time.time()
         print('experiment '+str(counter)+ ' time elapsed = '+str((toc-tic)/60))
         return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus, cox_m.flags

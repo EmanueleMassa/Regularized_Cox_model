@@ -51,3 +51,15 @@ def c_index(t, c, lp):
         den = den + np.mean(a)
         c_ind = c_ind + np.mean( a * np.array(lp > lp[i], int))
     return c_ind / den
+
+def breslow_est(c, elp):
+    n = len(elp)
+    bh = np.zeros(n)
+    R = sum(elp)
+    if(c[0] == 1):
+        bh[0] = 1.0 / R
+    for i in range(1, n):
+        R = R - elp[i-1]
+        if(c[i] == 1):
+            bh[i] = 1.0 / R
+    return bh

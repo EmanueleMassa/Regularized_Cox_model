@@ -14,14 +14,14 @@ def configuration_AMP(p, zeta, nu, theta0):
     #Covariance matrix
     A0 = np.identity(p)/ p
     #true associations
-    active_comp = rnd.normal(size = s)#2 * np.array(rnd.random(size = s) > 0.5, int) - np.ones(s)
-    beta0 = np.append(active_comp, np.zeros(p-s))
+    # active_comp = rnd.normal(size = s) * (2 * np.array(rnd.random(size = s) > 0.5, int) - np.ones(s))
+    beta0 = rnd.normal(size = p) * np.array(rnd.random(size = p) < nu, float)#np.append(active_comp, np.zeros(p-s))
     beta0 =  theta0 * beta0 / np.sqrt((beta0@A0@beta0))  
     return beta0, A0, n
 
 p = 2000
-zeta = 2.0
-nu = 0.001
+zeta = 4.0
+nu = 0.01
 theta0 = 1.0
 phi0 = -np.log(2)
 rho0 = 2.0
@@ -33,20 +33,22 @@ ratio = 1.0
 
 beta0, A0, n = configuration_AMP(p, zeta, nu, theta0)
 
+fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio) + '_delta' + "{:.3f}".format(nu)
+
 gen_mod = surv_models(A0, beta0, phi0, rho0, tau1, tau2, 'log-logistic') 
 T, C, X = gen_mod.gen(n)
 T_test, C_test, X_test = gen_mod.gen(n)
 
 #fit with Cox AMP
 coxm = cox_model(p, vals, ratio)
-coxm.fit(T, C, X, 'amp', eps = 0.9, tolerance = 1.0e-8, verb_flag= True)
+coxm.fit(T, C, X, 'amp', eps = 0.9, tolerance = 1.0e-7, verb_flag= True)
 betas_amp = coxm.betas
 flags_amp = coxm.flags
 coxm.compute_Harrel_c_train()
 train_err_amp = coxm.hc_index_train
 coxm.compute_Harrel_c_test(T_test, C_test, X_test)
 test_err_amp = coxm.hc_index_test
-
+dev_diff_amp = coxm.dev_diffs
 
 #fit with Cox CD
 coxm.fit(T, C, X, 'cd', verb_flag= True)
@@ -55,14 +57,15 @@ coxm.compute_Harrel_c_train()
 train_err_cd = coxm.hc_index_train
 coxm.compute_Harrel_c_test(T_test, C_test, X_test)
 test_err_cd = coxm.hc_index_test
+dev_diff_cd = coxm.dev_diffs
 
-mse = np.sqrt(np.sum((betas_cd - betas_amp)**2, axis = 1))/ np.sqrt(np.sum((betas_cd)**2, axis = 1))
+mse = np.sqrt(np.mean((betas_cd - betas_amp)**2, axis = 1))#/ np.sqrt(np.sum((betas_cd)**2, axis = 1))
 plt.figure()
 plt.title('relative L2 distance AMP vs CD')
 plt.plot(vals, mse, 'r-')
 plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
-plt.savefig('figures/error_AMP_CD.png')
+plt.savefig('figures/error_AMP_CD' + fmt + '.png')
 
 plt.figure()
 plt.title('Elbow Plot')
@@ -73,7 +76,7 @@ for j in range(len(flags_amp)):
         plt.axvline(x = vals[j])
 plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
-plt.savefig('figures/elbow_plot.png')
+plt.savefig('figures/elbow_plot' + fmt + '.png')
 
 
 plt.figure()
@@ -82,7 +85,7 @@ plt.plot(vals, train_err_amp, 'r-')
 plt.plot(vals, train_err_cd, 'b-')
 plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
-plt.savefig('figures/c_ind_train.png')
+plt.savefig('figures/c_ind_train' + fmt + '.png')
 
 plt.figure()
 plt.title('C index test ')
@@ -90,25 +93,33 @@ plt.plot(vals, test_err_amp, 'r-')
 plt.plot(vals, test_err_cd, 'b-')
 plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 5.0)
-plt.savefig('figures/c_ind_test.png')
+plt.savefig('figures/c_ind_test' + fmt + '.png')
 
-fig = plt.figure()
-ax1 = fig.add_subplot(211)
-ax2 = fig.add_subplot(212)
+plt.figure()
+plt.title('Deviance difference ')
+plt.plot(vals, dev_diff_amp, 'r-')
+plt.plot(vals, dev_diff_cd, 'b-')
+plt.xlabel(r'$\rho$')
+plt.xlim(left = 0.0, right = 5.0)
+plt.savefig('figures/dev_diff' + fmt + '.png')
 
-ax1.plot(vals, betas_amp, 'r-')
-ax1.plot(vals, betas_cd, 'b-')
-for j in range(len(flags_amp)):
-    if(flags_amp[j]!=True):
-        ax1.axvline(x = vals[j])
-# ax1.set_xlabel(r'$\rho$', fontsize = 10)
-ax1.set_xlim(left = min(vals), right = 5.0)
-ax1.set_ylabel(r'$\mathbf{\beta}$', fontsize = 10)
+# fig = plt.figure()
+# ax1 = fig.add_subplot(211)
+# ax2 = fig.add_subplot(212)
 
-ax2.plot(vals, test_err_amp, 'r-')
-ax2.plot(vals, test_err_cd, 'b-')
-ax2.set_xlabel(r'$\rho$', fontsize = 10)
-ax2.set_xlim(left = min(vals), right = 5.0)
-ax2.set_ylabel(r'${\rm HC}_{test}$', fontsize = 10)
-plt.savefig('figures/elbow_and_c_ind_test.png')
+# ax1.plot(vals, betas_amp, 'r-')
+# ax1.plot(vals, betas_cd, 'b-')
+# for j in range(len(flags_amp)):
+#     if(flags_amp[j]!=True):
+#         ax1.axvline(x = vals[j])
+# # ax1.set_xlabel(r'$\rho$', fontsize = 10)
+# ax1.set_xlim(left = min(vals), right = 5.0)
+# ax1.set_ylabel(r'$\mathbf{\beta}$', fontsize = 10)
+
+# ax2.plot(vals, test_err_amp, 'r-')
+# ax2.plot(vals, test_err_cd, 'b-')
+# ax2.set_xlabel(r'$\rho$', fontsize = 10)
+# ax2.set_xlim(left = min(vals), right = 5.0)
+# ax2.set_ylabel(r'${\rm HC}_{test}$', fontsize = 10)
+# plt.savefig('figures/elbow_and_c_ind_test' + fmt + '.png')
 plt.show()

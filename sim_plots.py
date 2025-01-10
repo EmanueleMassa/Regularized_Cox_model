@@ -2,12 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-zeta = 1.0
+zeta = 4.0
 theta0 = 1.0
-ratio = 1.0
-delta = 0.01
+ratio = 0.75
+delta = 0.001
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio)+ '_delta' + "{:.3f}".format(delta)
-method = 'amp'
+method = 'cd'
 
 rs_df = pd.read_csv('data/rs'+fmt+'.csv')
 sim_df = pd.read_csv('data/sim'+fmt+'_method_'+method+'.csv')
