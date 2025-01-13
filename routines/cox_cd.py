@@ -33,14 +33,16 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-8, verbose 
     n = len(c)
     zeta = p / n
     elp =  np.exp(x @ beta0)
+    H0 = na_est(c, elp)
     tic = time.time()
     while(err >= tol and flag):
-        H = na_est(c, elp)
-        hess = H * elp
+        hess = H0 * elp
         beta = cd_update(x, hess, c, alpha, eta, beta0)
         elp =  np.exp(x @ beta)
-        err =  np.sqrt(sum((beta - beta0)**2) )
+        H = na_est(c, elp)
+        err =  np.sqrt(max((beta - beta0) ** 2) + max((H - H0) ** 2) )
         beta0 = beta
+        H0 = H
         its = its + 1 
         if(np.isnan(err)):
             flag = False

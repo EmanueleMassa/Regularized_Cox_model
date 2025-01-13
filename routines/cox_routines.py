@@ -9,6 +9,8 @@ from routines.funcs import c_index, na_est, breslow_est
 class cox_model:
     def __init__(self, p, vals, ratio):
         self.p = p
+        self.rho = vals
+        self.ratio = ratio
         self.alphas = vals * ratio
         self.etas = vals * (1.0 -ratio)
         self.l = len(vals)
@@ -19,9 +21,7 @@ class cox_model:
         self.c = np.array(c,int)[idx]
         self.x = x[[idx],:][0,:,:]
         self.n = len(t)
-        self.h_null = breslow_est(c, np.ones(self.n))
-        self.H_null = na_est(c, np.ones(self.n))
-        self.loss_null =  np.mean(self.H_null) - sum([np.log(self.h_null[i]) for i in range(self.n) if c[i] != 0]) / self.n
+        cox_model.compute_rho_max(self)
         self.zeta = self.p / self.n
         beta = np.zeros(self.p)
         tau = 0.0
@@ -72,7 +72,7 @@ class cox_model:
             w = (np.mean(lp * (lp + tau * score)) - gamma * (1.0 - self.zeta * tau / hat_tau)) / (hat_w * self.zeta * tau /hat_tau)
         v = np.sqrt(max(gamma - w**2, 0))
         h = breslow_est(self.c, elp)
-        loss_train = np.mean(H * elp - self.c * lp) - sum([np.log(h[i]) for i in range(self.n) if self.c[i] != 0])/self.n
+        loss_train = sum(H * elp - self.c * lp) - sum([np.log(h[i]) for i in range(self.n) if self.c[i] != 0]) 
         dev_diff = np.abs(loss_train - self.loss_null) / self.loss_null
         return w, v, hat_w, hat_v, dev_diff 
     
@@ -84,6 +84,13 @@ class cox_model:
         self.hc_index_test = np.array([c_index(T_test, C_test, X_test @ self.betas[j, :]) for j in range(self.l)], float)
         return  
     
+    def compute_rho_max(self):
+        self.h_null = breslow_est(self.c, np.ones(self.n))
+        self.H_null = na_est(self.c, np.ones(self.n))
+        self.loss_null =  sum(self.H_null) - sum([np.log(self.h_null[i]) for i in range(self.n) if self.c[i] != 0])
+        s_null = (self.H_null - self.c) @ self.x 
+        self.rho_max = np.max(s_null) / self.ratio
+        return 
 
     
 

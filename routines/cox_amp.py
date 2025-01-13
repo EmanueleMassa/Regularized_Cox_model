@@ -37,7 +37,7 @@ def amp_cox(eta, alpha, C, X, beta0, xi0, tau0, hat_tau0, eps, max_its = 1000, t
     tic = time.time()
     while(err>= tol and flag):
         beta, xi, hat_tau, tau, H = gamp_cox_update(zeta, eta, alpha, C, X, beta0, xi0, hat_tau0, tau0, H0, eps)
-        err = np.sqrt( sum((beta - beta0)**2)+ sum((xi-xi0)**2)+ (tau - tau0)**2 + (hat_tau - hat_tau0)**2)
+        err = np.sqrt( max((beta - beta0)**2)+ max((xi-xi0)**2)+ (tau - tau0)**2 + (hat_tau - hat_tau0)**2 + max((H - H0)**2))
         if(err > err0):
             eps = eps * 0.5
         err0 = err
