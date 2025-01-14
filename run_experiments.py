@@ -7,7 +7,7 @@ import pandas as pd
 #number of covariates
 p = 2000
 #sparsity
-delta = 0.001
+delta = 0.005
 #signal strength 
 theta0 = 1.0
 
@@ -28,12 +28,12 @@ data_gen_process = surv_models(A0, beta0, phi0, rho0, tau1, tau2, model)
 gauss_process = gauss_model(theta0, phi0, rho0, tau1, tau2, model)
 
 #lambda values  
-values = np.exp(np.linspace(np.log(10.0), np.log(0.5),100))
+values = np.exp(np.linspace(np.log(10.0), np.log(0.5), 100))
 
-for ratio in [0.75]:
-    for zeta in [2.0, 4.0]:
-        #number of observations
-        n = int(p / zeta)
+for zeta in [4.0, 2.0, 1.0, 0.5]:
+    #number of observations
+    n = int(p / zeta)
+    for ratio in [1.0, 0.95, 0.75]:
         #label for the csv files
         fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio) + '_delta' + "{:.3f}".format(delta)
 

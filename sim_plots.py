@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-zeta = 4.0
+zeta = 2.0
 theta0 = 1.0
-ratio = 0.75
-delta = 0.001
+ratio = 1.00
+delta = 0.005
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio)+ '_delta' + "{:.3f}".format(delta)
 method = 'cd'
 
@@ -120,4 +120,10 @@ if(method == 'amp'):
     plt.errorbar(sim_df['vals'],sim_df['flags_mean'],yerr =sim_df['flags_std'],fmt = 'k.', capsize = 3)
     # plt.xlim(left = 0, right = 1.0)
     plt.savefig(directory+'flags' + fmt +'amp.jpg')
+
+plt.figure()
+plt.errorbar(sim_df['vals'],sim_df['times_mean'],yerr =sim_df['times_std'],fmt = 'k.', capsize = 3)
+plt.ylabel('Elapsed Time in minutes')
+plt.xlabel(r'$\rho$')
+plt.savefig(directory+'elapsed_time' + fmt +'method_'+method+'.jpg')
 plt.show()

@@ -52,15 +52,16 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-8, verbose 
             if(verbose):
                 print('CD not converged! alpha = '+str(alpha)+', error = ' + str(err))
     toc = time.time()
+    elapsed_time = (toc - tic) / 60
     if(flag and verbose):
-        print('CD alpha = ' + str(alpha) + ', time elapsed = ' + str((toc-tic)/60) + ', its =' + str(its) )
+        print('CD alpha = ' + str(alpha) + ', time elapsed = ' + str(elapsed_time) + ', its =' + str(its) )
     av_norm0_beta = np.mean(np.array(np.abs(beta0) > tol, int))
     tau = compute_tau(zeta * av_norm0_beta , hess, zeta * eta, tau0)
     if(tau == 0.0):
         hat_tau = zeta / np.mean(hess)
     else:
         hat_tau =  tau / (av_norm0_beta - eta * tau)
-    return beta0, hat_tau, tau, flag
+    return beta0, hat_tau, tau, flag, elapsed_time
 
 
 @njit

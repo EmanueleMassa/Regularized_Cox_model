@@ -55,6 +55,7 @@ def amp_cox(eta, alpha, C, X, beta0, xi0, tau0, hat_tau0, eps, max_its = 1000, t
             if(verbose):
                 print('AMP not converged! alpha = ' + str(alpha) + ', error = ' + str(err))
     toc = time.time()
+    elapsed_time = (toc-tic)/60
     if(flag and verbose):
-        print('AMP converged, alpha = '+str(alpha)+', time elapsed = '+str((toc-tic)/60) + ', its =' + str(its))
-    return beta, xi, hat_tau, tau, flag
+        print('AMP converged, alpha = '+str(alpha)+', time elapsed = '+str(elapsed_time) + ', its =' + str(its))
+    return beta, xi, hat_tau, tau, flag, elapsed_time

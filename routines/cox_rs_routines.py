@@ -63,7 +63,7 @@ class rs_cox:
             hat_v = damp * hat_v1 + (1.0 - damp) * hat_v0
             hat_tau = damp * hat_tau1 + (1.0 - damp) * hat_tau0
             H = damp * H1 + (1.0 - damp) * H0
-            err = np.sqrt( (hat_v-hat_v0)**2+ (hat_tau-hat_tau0)**2  + (hat_w-hat_w0)**2 + (H-H0)@(H-H0))
+            err = np.sqrt( (hat_v-hat_v0)**2 + (hat_tau-hat_tau0)**2  + (hat_w-hat_w0)**2 + (H-H0)@(H-H0))
             its = its + 1
             hat_v0 = hat_v
             hat_tau0 = hat_tau

@@ -40,20 +40,24 @@ class cox_model:
         self.hat_ws = np.zeros(self.l)
         self.hat_vs = np.zeros(self.l)
         self.dev_diffs = np.zeros(self.l)
+        self.times = np.zeros(self.l)
         for j in range(self.l):
             eta = self.etas[j]
             alpha = self.alphas[j]
             if(method == 'cd'):
-                beta, hat_tau, tau, flag = cd_cox(eta, alpha, self.c, self.x, beta, tau, tol = tolerance, verbose = verb_flag)
+                beta, hat_tau, tau, flag, time = cd_cox(eta, alpha, self.c, self.x, beta, tau, tol = tolerance, verbose = verb_flag)
             if(method == 'amp'):
-                if(warm_start_amp):
-                    beta, xi, hat_tau, tau, flag = amp_cox(eta, alpha, self.c, self.x, beta, xi, tau, hat_tau, eps, tol = tolerance, verbose = verb_flag)
-                else:      
-                    beta, xi, hat_tau, tau, flag = amp_cox(eta, alpha, self.c, self.x, beta_in, xi_in, tau_in, hat_tau_in, eps, tol = tolerance, verbose = verb_flag)
+                if(warm_start_amp == False):
+                    beta = beta_in
+                    xi = xi_in
+                    tau = tau_in
+                    hat_tau = hat_tau_in
+                beta, xi, hat_tau, tau, flag, time = amp_cox(eta, alpha, self.c, self.x, beta, xi, tau, hat_tau, eps, tol = tolerance, verbose = verb_flag)      
             self.flags[j] = flag
             self.betas[j,:] = beta
             self.taus[j] = tau
             self.hat_taus[j] = hat_tau
+            self.times[j] = time
             self.ws[j], self.vs[j], self.hat_ws[j], self.hat_vs[j], self.dev_diffs[j] = cox_model.compute_observables(self, beta, hat_tau, tau)
         return 
     

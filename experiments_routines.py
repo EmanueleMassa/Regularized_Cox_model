@@ -30,7 +30,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         cox_m.fit(T, C, X, method, verb_flag = True, tolerance = fit_tol)
         toc = time.time()
         print('experiment '+str(counter)+ ' time elapsed = '+str((toc-tic)/60))
-        return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus, cox_m.flags
+        return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus, cox_m.flags, cox_m.times
     
     cox_m = cox_model(p, values, ratio)
 
@@ -45,6 +45,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         hat_v = np.stack(t_df.iloc[:, 4].to_numpy())
         hat_tau = np.stack(t_df.iloc[:, 5].to_numpy())
         flags = np.stack(t_df.iloc[:, 6].to_numpy())
+        times = np.stack(t_df.iloc[:, 7].to_numpy())
         toc = time.time()
         print('total elapsed time = ' + str((toc-tic)/60))
 
@@ -56,10 +57,10 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         hat_v = np.zeros((m, len(values)))
         hat_tau = np.zeros((m, len(values)))
         flags = np.zeros((m, len(values)))
-
+        times = np.zeros((m, len(values)))
         big_tic = time.time()
         for i in range(m):
-            w[i,:], v[i,:], tau[i,:], hat_w[i,:], hat_v[i,:], hat_tau[i,:], flags[i,:] = experiment(i, GM, cox_m, method, n)
+            w[i,:], v[i,:], tau[i,:], hat_w[i,:], hat_v[i,:], hat_tau[i,:], flags[i,:], times[i,:] = experiment(i, GM, cox_m, method, n)
         big_toc = time.time()
         print('total elapsed time = ' + str((big_toc-big_tic)/60))
 
@@ -79,7 +80,9 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         'hat_tau_mean' : np.mean(hat_tau, axis = 0),
         'hat_tau_std' : np.std(hat_tau, axis = 0),
         'flags_mean' : np.mean(flags, axis = 0),
-        'flags_std' : np.std(flags, axis = 0)
+        'flags_std' : np.std(flags, axis = 0),
+        'times_mean' : np.mean(times, axis = 0),
+        'times_std' : np.std(times, axis = 0)
     }
     df = pd.DataFrame(data)
     return df 
