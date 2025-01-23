@@ -2,7 +2,7 @@ import numpy as np
 from routines.cox_routines import cox_model
 from routines.surv_data_generator import surv_models
 from routines.cox_rs_routines import gauss_model
-from experiments_routines import run_rs, run_sim, isotropic_setting
+from experiments_routines import isotropic_setting
 from joblib import Parallel, delayed
 import pandas as pd 
 import time 
@@ -17,7 +17,7 @@ delta = 0.01
 #signal strength 
 theta0 = 1.0
 
-
+method = 'amp'
 
 #define the population covariance matrix and the true beta
 A0, beta0 = isotropic_setting(p, delta, theta0)
@@ -82,7 +82,7 @@ def run_sim_simple(p, n, values, ratio, GM, method, m, parallel_flag = False):
     df = pd.DataFrame(data)
     return df
 
-sim = run_sim_simple(p, n, values, ratio, data_gen_process, 'cd', 50, parallel_flag = False)
+sim = run_sim_simple(p, n, values, ratio, data_gen_process, method, 20, parallel_flag = False)
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio) 
 fmt = fmt + '_delta' + "{:.3f}".format(delta)
-sim.to_csv('data/simple_sim' + fmt + '_method_cd.csv', index = False)
+sim.to_csv('data/simple_sim' + fmt + '_method_'+ method + '.csv', index = False)

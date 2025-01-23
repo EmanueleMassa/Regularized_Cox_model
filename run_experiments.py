@@ -7,7 +7,7 @@ import pandas as pd
 #number of covariates
 p = 2000
 #sparsity
-delta = 0.005
+delta = 0.01
 #signal strength 
 theta0 = 1.0
 

@@ -21,7 +21,7 @@ class cox_model:
         self.c = np.array(c,int)[idx]
         self.x = x[[idx],:][0,:,:]
         self.n = len(t)
-        cox_model.compute_rho_max(self)
+        cox_model.compute_null(self)
         self.zeta = self.p / self.n
         beta = np.zeros(self.p)
         tau = 0.0
@@ -88,12 +88,11 @@ class cox_model:
         self.hc_index_test = np.array([c_index(T_test, C_test, X_test @ self.betas[j, :]) for j in range(self.l)], float)
         return  
     
-    def compute_rho_max(self):
+    def compute_null(self):
         self.h_null = breslow_est(self.c, np.ones(self.n))
         self.H_null = na_est(self.c, np.ones(self.n))
         self.loss_null =  sum(self.H_null) - sum([np.log(self.h_null[i]) for i in range(self.n) if self.c[i] != 0])
         s_null = (self.H_null - self.c) @ self.x 
-        self.rho_max = np.max(s_null) / self.ratio
         return 
 
     
