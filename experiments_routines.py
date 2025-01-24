@@ -14,10 +14,10 @@ def run_rs(values, ratio, delta, zeta, gm, m):
         cox_rs.alpha = values[l] * ratio
         cox_rs.eta = values[l] * (1-ratio)
         cox_rs.solve()
-        res = np.array([values[l], cox_rs.w, cox_rs.v, cox_rs.tau, cox_rs.hat_w, cox_rs.hat_v, cox_rs.hat_tau], float)
+        res = np.array([values[l], cox_rs.w, cox_rs.v, cox_rs.tau, cox_rs.hat_w, cox_rs.hat_v, cox_rs.hat_tau, cox_rs.rs_loo_hc], float)
         print(res)
         metrics[l,:] = res
-    df = pd.DataFrame(metrics, columns=['vals', 'w', 'v', 'tau', 'hat_w', 'hat_v', 'hat_tau'])
+    df = pd.DataFrame(metrics, columns=['vals', 'w', 'v', 'tau', 'hat_w', 'hat_v', 'hat_tau', 'rs_loo_hc'])
     return df
     
 
@@ -30,9 +30,9 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         cox_m.fit(T, C, X, method, verb_flag = True, tolerance = fit_tol)
         toc = time.time()
         print('experiment '+str(counter)+ ' time elapsed = '+str((toc-tic)/60))
-        return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus, cox_m.flags, cox_m.times
+        return cox_m.ws, cox_m.vs, cox_m.taus, cox_m.hat_ws, cox_m.hat_vs, cox_m.hat_taus, cox_m.flags, cox_m.times, cox_m.rs_loo_hc
     
-    cox_m = cox_model(p, values, ratio)
+    cox_m = cox_model(values, ratio)
 
     if(parallel_flag):
         tic = time.time()
@@ -46,6 +46,7 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         hat_tau = np.stack(t_df.iloc[:, 5].to_numpy())
         flags = np.stack(t_df.iloc[:, 6].to_numpy())
         times = np.stack(t_df.iloc[:, 7].to_numpy())
+        rs_loo_hc = np.stack(t_df.iloc[:, 8].to_numpy())
         toc = time.time()
         print('total elapsed time = ' + str((toc-tic)/60))
 
@@ -58,9 +59,10 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         hat_tau = np.zeros((m, len(values)))
         flags = np.zeros((m, len(values)))
         times = np.zeros((m, len(values)))
+        rs_loo_hc = np.zeros((m, len(values)))
         big_tic = time.time()
         for i in range(m):
-            w[i,:], v[i,:], tau[i,:], hat_w[i,:], hat_v[i,:], hat_tau[i,:], flags[i,:], times[i,:] = experiment(i, GM, cox_m, method, n)
+            w[i,:], v[i,:], tau[i,:], hat_w[i,:], hat_v[i,:], hat_tau[i,:], flags[i,:], times[i,:], rs_loo_hc[i,:] = experiment(i, GM, cox_m, method, n)
         big_toc = time.time()
         print('total elapsed time = ' + str((big_toc-big_tic)/60))
 
@@ -82,7 +84,9 @@ def run_sim(p, n, values, ratio, GM, method, m, parallel_flag = False, fit_tol =
         'flags_mean' : np.mean(flags, axis = 0),
         'flags_std' : np.std(flags, axis = 0),
         'times_mean' : np.mean(times, axis = 0),
-        'times_std' : np.std(times, axis = 0)
+        'times_std' : np.std(times, axis = 0),
+        'rs_loo_hc_mean' : np.mean(rs_loo_hc, axis = 0),
+        'rs_loo_hc_std' : np.std(rs_loo_hc, axis = 0)
     }
     df = pd.DataFrame(data)
     return df 

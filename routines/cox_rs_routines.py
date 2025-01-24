@@ -2,7 +2,7 @@ import numpy as np
 import numpy.random as rnd
 from scipy.special import lambertw
 from scipy.special import erf
-from routines.funcs import na_est
+from routines.funcs import na_est, c_index
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -78,6 +78,8 @@ class rs_cox:
         self.v = v
         self.tau = tau
         self.xi = xi
+        lp_loo = self.w * self.z0 + self.v * self.q
+        self.rs_loo_hc = c_index(self.t, self.c, lp_loo)
         return 
     
 

@@ -126,4 +126,13 @@ plt.errorbar(sim_df['vals'],sim_df['times_mean'],yerr =sim_df['times_std'],fmt =
 plt.ylabel('Elapsed Time in minutes')
 plt.xlabel(r'$\rho$')
 plt.savefig(directory+'elapsed_time' + fmt +'method_'+method+'.jpg')
+
+
+
+plt.figure()
+plt.errorbar(sim_df['vals'],sim_df['rs_loo_hc_mean'],yerr =sim_df['rs_loo_hc_std'],fmt = 'k.', capsize = 3)
+ax1.plot(rs_df['vals'],rs_df['rs_loo_hc'],'r-')
+plt.ylabel('HC (RS cross validation)')
+plt.xlabel(r'$\rho$')
+plt.savefig(directory+'rs_loo_hc' + fmt +'method_'+method+'.jpg')
 plt.show()

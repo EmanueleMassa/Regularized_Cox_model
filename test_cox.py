@@ -21,7 +21,7 @@ def configuration_AMP(p, zeta, nu, theta0):
 
 p = 2000
 zeta = 2.0
-nu = 0.005
+nu = 0.01
 theta0 = 1.0
 phi0 = -np.log(2)
 rho0 = 2.0
@@ -40,7 +40,7 @@ T, C, X = gen_mod.gen(n)
 T_test, C_test, X_test = gen_mod.gen(n)
 
 #fit with Cox AMP
-coxm = cox_model(p, vals, ratio)
+coxm = cox_model(vals, ratio)
 coxm.fit(T, C, X, 'amp', eps = 0.9, tolerance = 1.0e-7, verb_flag= True)
 betas_amp = coxm.betas
 flags_amp = coxm.flags
@@ -48,7 +48,7 @@ coxm.compute_Harrel_c_train()
 train_err_amp = coxm.hc_index_train
 coxm.compute_Harrel_c_test(T_test, C_test, X_test)
 test_err_amp = coxm.hc_index_test
-dev_diff_amp = coxm.dev_diffs
+
 
 #fit with Cox CD
 coxm.fit(T, C, X, 'cd', verb_flag= True)
@@ -57,7 +57,7 @@ coxm.compute_Harrel_c_train()
 train_err_cd = coxm.hc_index_train
 coxm.compute_Harrel_c_test(T_test, C_test, X_test)
 test_err_cd = coxm.hc_index_test
-dev_diff_cd = coxm.dev_diffs
+
 
 mse = np.sqrt(np.mean((betas_cd - betas_amp)**2, axis = 1))#/ np.sqrt(np.sum((betas_cd)**2, axis = 1))
 
@@ -97,13 +97,6 @@ plt.xlabel(r'$\rho$')
 plt.xlim(left = 0.0, right = 7.0)
 plt.savefig('figures/c_ind_test' + fmt + '.jpg')
 
-plt.figure()
-plt.title('Deviance difference ')
-plt.plot(vals, dev_diff_amp, 'r-')
-plt.plot(vals, dev_diff_cd, 'b-')
-plt.xlabel(r'$\rho$')
-plt.xlim(left = 0.0, right = 7.0)
-plt.savefig('figures/dev_diff' + fmt + '.jpg')
 
 fig = plt.figure()
 ax1 = fig.add_subplot(211)
