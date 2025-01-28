@@ -33,14 +33,14 @@ class rs_cox:
         self.dg0 = gm.ch(self.t) * np.exp(self.theta0 * self.z0) - self.c
 
     
-    def solve(self, damp = 0.5):
+    def solve(self, damp = 0.5, tol = 1.0e-8):
         err = 1.0
         its = 0
         hat_w0 = self.hat_w
         hat_v0 = self.hat_v
         hat_tau0 = self.hat_tau
         H0 = self.H
-        while(err>1.0e-8):
+        while(err > tol):
             x1 = self.alpha * hat_tau0 / np.sqrt(hat_w0**2 / self.delta + hat_v0**2)
             x2 = self.alpha * hat_tau0 / hat_v0
             w = 2 * hat_w0 * Q(x1) / (1.0 + self.eta * hat_tau0)

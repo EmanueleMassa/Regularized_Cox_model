@@ -39,7 +39,7 @@ class cox_model:
         self.hat_tau = 0.0
         self.xi = self.x @ self.beta
 
-    def fit(self, t, c, x, method, eps = 0.5, verb_flag = False, warm_start_amp = False, tolerance = 1.0e-8):
+    def fit(self, t, c, x, method, eps = 0.5, verb_flag = False, warm_start_amp = False, tolerance = 1.0e-7):
         cox_model.get_dimensions(self, t, c, x)
         cox_model.initialize(self)
         for j in range(self.l):
@@ -63,17 +63,19 @@ class cox_model:
         lp = self.x @ self.beta
         elp = np.exp(lp)
         H = na_est(self.c, elp)
-        score = (H * elp - self.c)
-        db_beta = self.beta - self.hat_tau * np.transpose(self.x) @ score
-        hat_v = self.hat_tau * np.sqrt( np.mean( score ** 2 ) / self.zeta)
+        dg = (H * elp - self.c)
+        db_beta = self.beta - self.hat_tau * np.transpose(self.x) @ dg
+        hat_v = self.hat_tau * np.sqrt( np.mean( dg ** 2 ) / self.zeta)
         hat_w = np.sqrt(max(np.mean(db_beta ** 2) - (hat_v ** 2), 0))
-        lp_loo = lp + self.tau * score
+        lp_loo = lp + self.tau * dg
         gamma = np.mean(lp_loo ** 2)
-        if(self.tau == 0.0):
+        if(hat_w == 0):
             w = 0.0
         else:
-            x = self.zeta * self.tau / self.hat_tau
-            w = (np.mean(lp * lp_loo) - gamma * (1.0 - x)) / (hat_w * x)
+            w = (gamma - self.hat_tau * np.mean(lp_loo * dg) / self.zeta) / hat_w
+        #     x = self.zeta * self.tau / self.hat_tau
+        #     w = (np.mean(lp * lp_loo) - gamma * (1.0 - x)) / (hat_w * x)
+
         v = np.sqrt(max(gamma - (w ** 2), 0))
         rs_loo_hc = c_index(self.t, self.c, lp_loo)
         return w, v, hat_w, hat_v, rs_loo_hc

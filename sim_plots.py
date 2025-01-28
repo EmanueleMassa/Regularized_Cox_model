@@ -4,10 +4,10 @@ import pandas as pd
 
 zeta = 2.0
 theta0 = 1.0
-ratio = 1.00
+ratio = 0.95
 delta = 0.005
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio)+ '_delta' + "{:.3f}".format(delta)
-method = 'cd'
+method = 'amp'
 
 rs_df = pd.read_csv('data/rs'+fmt+'.csv')
 sim_df = pd.read_csv('data/sim'+fmt+'_method_'+method+'.csv')
@@ -23,20 +23,20 @@ ax3 = fig1.add_subplot(313)
 ax1.errorbar(sim_df['vals'],sim_df['hat_w_mean'],yerr =sim_df['hat_w_std'],fmt = 'k.', capsize = 3)
 ax1.plot(rs_df['vals'],rs_df['hat_w'],'r-')
 ax1.set_ylabel(r'$\hat{w}_n$')
-ax1.set_xlim(left = min(rs_df['vals']), right = 3.0)
+ax1.set_xlim(left = min(rs_df['vals']), right = 5.0)
 # ax1.set_xlabel(r'$\rho$')
 
 ax2.errorbar(sim_df['vals'],sim_df['hat_v_mean'],yerr =sim_df['hat_v_std'],fmt = 'k.', capsize = 3)
 ax2.plot(rs_df['vals'],rs_df['hat_v'],'r-')
 ax2.set_ylabel(r'$\hat{v}_n$')
-ax2.set_xlim(left = min(rs_df['vals']), right = 3.0)
+ax2.set_xlim(left = min(rs_df['vals']), right = 5.0)
 # ax2.set_xlabel(r'$\rho$')
 
 ax3.errorbar(sim_df['vals'],sim_df['hat_tau_mean'],yerr =sim_df['hat_tau_std'],fmt = 'k.', capsize = 3)
 ax3.plot(rs_df['vals'],rs_df['hat_tau'],'r-')
 ax3.set_ylabel(r'$\hat{\tau}_n$')
 ax3.set_xlabel(r'$\rho$')
-ax3.set_xlim(left = min(rs_df['vals']), right = 3.0)
+ax3.set_xlim(left = min(rs_df['vals']), right = 5.0)
 
 plt.savefig(directory+'hat_order_parameters' + fmt +'method_'+method+'.jpg')
 
@@ -48,20 +48,20 @@ ax3 = fig2.add_subplot(313)
 ax1.errorbar(sim_df['vals'],sim_df['w_mean'],yerr =sim_df['w_std'],fmt = 'k.', capsize = 3)
 ax1.plot(rs_df['vals'],rs_df['w'],'r-')
 ax1.set_ylabel(r'$w_n$')
-ax1.set_xlim(left = min(rs_df['vals']), right = 3.0)
+ax1.set_xlim(left = min(rs_df['vals']), right = 5.0)
 # ax1.set_xlabel(r'$\rho$')
 
 ax2.errorbar(sim_df['vals'],sim_df['v_mean'],yerr =sim_df['v_std'],fmt = 'k.', capsize = 3)
 ax2.plot(rs_df['vals'],rs_df['v'],'r-')
 ax2.set_ylabel(r'$v_n$')
-ax2.set_xlim(left = min(rs_df['vals']), right = 3.0)
+ax2.set_xlim(left = min(rs_df['vals']), right = 5.0)
 # ax2.set_xlabel(r'$\rho$')
 
 ax3.errorbar(sim_df['vals'],sim_df['tau_mean'],yerr =sim_df['tau_std'],fmt = 'k.', capsize = 3)
 ax3.plot(rs_df['vals'],rs_df['tau'],'r-')
 ax3.set_ylabel(r'$\tau_n$')
 ax3.set_xlabel(r'$\rho$')
-ax3.set_xlim(left = min(rs_df['vals']), right = 3.0)
+ax3.set_xlim(left = min(rs_df['vals']), right = 5.0)
 
 plt.savefig(directory+'order_parameters' + fmt +'method_'+method+'.jpg')
 
@@ -131,8 +131,9 @@ plt.savefig(directory+'elapsed_time' + fmt +'method_'+method+'.jpg')
 
 plt.figure()
 plt.errorbar(sim_df['vals'],sim_df['rs_loo_hc_mean'],yerr =sim_df['rs_loo_hc_std'],fmt = 'k.', capsize = 3)
-ax1.plot(rs_df['vals'],rs_df['rs_loo_hc'],'r-')
+plt.plot(rs_df['vals'],rs_df['rs_loo_hc'],'r-')
 plt.ylabel('HC (RS cross validation)')
 plt.xlabel(r'$\rho$')
 plt.savefig(directory+'rs_loo_hc' + fmt +'method_'+method+'.jpg')
+
 plt.show()

@@ -8,24 +8,35 @@ warnings.filterwarnings('ignore')
 
 vl = np.vectorize(lambertw)
 
-
+# @njit
+# def cd_update(ddg, dg, x, alpha, eta, beta0):
+#     lp0 = x @ beta0
+#     p = len(beta0)
+#     beta1 = beta0
+#     for k in range(p):
+#         lp = x @ beta1
+#         I_k = np.dot((x[:, k] * ddg), x[:, k])
+#         xi_k =  np.dot(x[:,k], (ddg * (lp - lp0)))
+#         s_k = np.dot(dg, x[:,k])
+#         phi = s_k + xi_k - I_k * beta1[k]
+#         tau = I_k + eta
+#         beta1[k] = st(-phi, alpha)/tau
+#     return beta1
 
 @njit
 def cd_update(ddg, dg, x, alpha, eta, beta0):
     beta1 = beta0
-    hess = np.transpose(x) @ np.diag(ddg) @ x
-    score = dg @ x
+    hess = np.dot((np.transpose(x) * ddg), x)
+    score = np.dot(dg, x)
     p = len(beta0)
     for k in range(p):
         I_k = hess[k, k]
-        xi_k =  hess[k, :] @ (beta1 - beta0)
-        s_k = score[k]
-        phi =  I_k * beta1[k] - s_k - xi_k
-        tau = I_k + eta
-        beta1[k] = st(phi, alpha)/tau
+        phi_k = np.dot(hess[k, :], (beta1 - beta0)) + score[k]
+        psi = I_k * beta1[k] - phi_k  
+        beta1[k] = st(psi, alpha)/ (eta + I_k )
     return beta1
 
-def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-6, verbose = False):
+def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 1000, tol = 1.0e-8, verbose = False):
     its = 0
     err = 1.0
     flag = True
@@ -39,7 +50,6 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-6, verbose 
         ddg = H0 * elp
         dg = ddg - c
         beta = cd_update(ddg, dg, x, alpha, eta, beta0)
-        # beta = cd_update(x, ddg, c, alpha, eta, beta0)
         elp =  np.exp(x @ beta)
         H = na_est(c, elp)
         err =  np.sqrt(max((beta - beta0) ** 2) + max((H - H0) ** 2))
@@ -57,10 +67,13 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 300, tol = 1.0e-6, verbose 
     elapsed_time = (toc - tic) / 60
     if(flag and verbose):
         print('CD alpha = ' + str(alpha) + ', time elapsed = ' + str(elapsed_time) + ', its =' + str(its) )
+    ddg = H * elp
+    if(np.all(ddg == 0)):
+        print('vanishing hessian')
     av_norm0_beta = np.mean(np.array(np.abs(beta0) > tol, int))
-    tau = compute_tau(zeta * av_norm0_beta , ddg, zeta * eta, tau0)
+    tau = compute_tau(zeta * av_norm0_beta, ddg, zeta * eta, tau0)
     if(tau == 0.0):
-        hat_tau = zeta / np.mean(H * elp)
+        hat_tau = zeta / np.mean(ddg)
     else:
         hat_tau =  tau / (av_norm0_beta - eta * tau)
     return beta0, hat_tau, tau, flag, elapsed_time

@@ -7,7 +7,7 @@ import time
 import pandas as pd 
 
 def run_rs(values, ratio, delta, zeta, gm, m):
-    metrics = np.empty((len(values),7))
+    metrics = np.empty((len(values),8))
     cox_rs = rs_cox(delta, zeta, gm, m)
     # loop over the values of lambda
     for l in range(len(values)):

@@ -34,7 +34,7 @@ data_gen_process = surv_models(A0, beta0, phi0, rho0, tau1, tau2, model)
 gauss_process = gauss_model(theta0, phi0, rho0, tau1, tau2, model)
 
 #lambda values  
-values = np.exp(np.linspace(np.log(10.0), np.log(0.5), 100))
+values = np.exp(np.linspace(np.log(10.0), np.log(0.9), 100))
 #l1_ratio
 ratio = 0.75
 
@@ -52,7 +52,7 @@ def run_sim_simple(p, n, values, ratio, GM, method, m, parallel_flag = False):
         print('simple_experiment '+str(counter)+ ' time elapsed = '+str((toc-tic)/60))
         return w, v
 
-    cox_m = cox_model(p, values, ratio)
+    cox_m = cox_model(values, ratio)
 
     if(parallel_flag):
         tic = time.time()
