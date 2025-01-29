@@ -39,7 +39,7 @@ class cox_model:
         self.hat_tau = 0.0
         self.xi = self.x @ self.beta
 
-    def fit(self, t, c, x, method, eps = 0.5, verb_flag = False, warm_start_amp = False, tolerance = 1.0e-7):
+    def fit(self, t, c, x, method, eps = 0.9, verb_flag = False, warm_start_amp = False, tolerance = 1.0e-7):
         cox_model.get_dimensions(self, t, c, x)
         cox_model.initialize(self)
         for j in range(self.l):

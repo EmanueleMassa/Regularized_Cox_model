@@ -23,18 +23,27 @@ vl = np.vectorize(lambertw)
 #         beta1[k] = st(-phi, alpha)/tau
 #     return beta1
 
-@njit
-def cd_update(ddg, dg, x, alpha, eta, beta0):
-    beta1 = beta0
-    hess = np.dot((np.transpose(x) * ddg), x)
-    score = np.dot(dg, x)
-    p = len(beta0)
-    for k in range(p):
-        I_k = hess[k, k]
-        phi_k = np.dot(hess[k, :], (beta1 - beta0)) + score[k]
-        psi = I_k * beta1[k] - phi_k  
-        beta1[k] = st(psi, alpha)/ (eta + I_k )
-    return beta1
+# @njit
+# def cd_update(ddg, dg, x, alpha, eta, beta0):
+#     beta1 = beta0
+#     hess = np.dot((np.transpose(x) * ddg), x)
+#     score = np.dot(dg, x)
+#     p = len(beta0)
+#     for k in range(p):
+#         I_k = hess[k, k]
+#         phi_k = np.dot(hess[k, :], (beta1 - beta0)) + score[k]
+#         psi = I_k * beta1[k] - phi_k  
+#         beta1[k] = st(psi, alpha)/ (eta + I_k )
+#     return beta1
+
+# @njit
+def cd_update(A, b, alpha, eta, beta):
+    z = beta
+    for k in range(len(b)):
+        phi = - (A[k,:] @ z - A[k,k] * z[k] + b[k])
+        tau = A[k,k] + eta
+        z[k] = st(phi, alpha)/tau
+    return z
 
 def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 1000, tol = 1.0e-8, verbose = False):
     its = 0
@@ -43,14 +52,18 @@ def cd_cox(eta, alpha, c, x, beta0, tau0,  max_its = 1000, tol = 1.0e-8, verbose
     p = len(beta0)
     n = len(c)
     zeta = p / n
-    elp =  np.exp(x @ beta0)
+    lp = x @ beta0
+    elp =  np.exp(lp)
     H0 = na_est(c, elp)
     tic = time.time()
     while(err >= tol and flag):
         ddg = H0 * elp
         dg = ddg - c
-        beta = cd_update(ddg, dg, x, alpha, eta, beta0)
-        elp =  np.exp(x @ beta)
+        hess = np.dot((np.transpose(x) * ddg), x)
+        b = (dg - ddg * lp) @ x
+        beta = cd_update(hess, b, alpha, eta, beta0)
+        lp = x @ beta
+        elp =  np.exp(lp)
         H = na_est(c, elp)
         err =  np.sqrt(max((beta - beta0) ** 2) + max((H - H0) ** 2))
         beta0 = beta

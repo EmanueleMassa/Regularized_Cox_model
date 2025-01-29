@@ -20,7 +20,7 @@ def configuration_AMP(p, zeta, nu, theta0):
     return beta0, A0, n
 
 p = 2000
-zeta = 2.0
+zeta = 10.0
 nu = 0.005
 theta0 = 1.0
 phi0 = -np.log(2)
@@ -28,7 +28,9 @@ rho0 = 2.0
 tau1 = 1.0
 tau2 = 2.0
 mu0 = np.zeros(p)
-vals = np.exp(np.linspace(np.log(10.0), np.log(0.9), 100))
+rho_max = 5.0
+rho_min = 0.2
+vals = np.exp(np.linspace(np.log(rho_max), np.log(rho_min), 100))
 ratio = 0.75
 
 beta0, A0, n = configuration_AMP(p, zeta, nu, theta0)
@@ -67,7 +69,7 @@ plt.figure()
 plt.title(r'$\|\mathbf{\beta}_{AMP} - \mathbf{\beta}_{CD}\|_{\infty}$')
 plt.plot(vals, mse, 'r-')
 plt.xlabel(r'$\rho$')
-plt.xlim(left = min(vals), right = 7.0)
+plt.xlim(left = rho_min, right = rho_max)
 plt.savefig('figures/error_AMP_CD' + fmt + '.jpg')
 
 plt.figure()
@@ -78,7 +80,7 @@ for j in range(len(flags_amp)):
     if(flags_amp[j]!=True):
         plt.axvline(x = vals[j])
 plt.xlabel(r'$\rho$')
-plt.xlim(left = min(vals), right = 7.0)
+plt.xlim(left = rho_min, right = rho_max)
 plt.savefig('figures/elbow_plot' + fmt + '.jpg')
 
 
@@ -87,7 +89,7 @@ plt.title('C index train ')
 plt.plot(vals, train_err_amp, 'r-')
 plt.plot(vals, train_err_cd, 'b-')
 plt.xlabel(r'$\rho$')
-plt.xlim(left = min(vals), right = 7.0)
+plt.xlim(left = rho_min, right = rho_max)
 plt.savefig('figures/c_ind_train' + fmt + '.jpg')
 
 plt.figure()
@@ -97,7 +99,7 @@ plt.plot(vals, rs_loo_hc_amp, 'ro')
 plt.plot(vals, test_err_cd, 'b-')
 plt.plot(vals, rs_loo_hc_cd, 'bo')
 plt.xlabel(r'$\rho$')
-plt.xlim(left = min(vals), right = 7.0)
+plt.xlim(left = rho_min, right = rho_max)
 plt.savefig('figures/c_ind_test' + fmt + '.jpg')
 
 
@@ -111,7 +113,7 @@ for j in range(len(flags_amp)):
     if(flags_amp[j]!=True):
         ax1.axvline(x = vals[j])
 # ax1.set_xlabel(r'$\rho$', fontsize = 10)
-ax1.set_xlim(left = min(vals), right = 7.0)
+ax1.set_xlim(left = rho_min, right = rho_max)
 ax1.set_ylabel(r'$\mathbf{\beta}$', fontsize = 10)
 
 ax2.plot(vals, test_err_amp, 'r-')
@@ -119,7 +121,7 @@ ax2.plot(vals, rs_loo_hc_amp, 'ro')
 ax2.plot(vals, test_err_cd, 'b-')
 ax2.plot(vals, rs_loo_hc_cd, 'bo')
 ax2.set_xlabel(r'$\rho$', fontsize = 10)
-ax2.set_xlim(left = min(vals), right = 7.0)
+ax2.set_xlim(left = rho_min, right = rho_max)
 ax2.set_ylabel(r'${\rm HC}_{test}$', fontsize = 10)
 plt.savefig('figures/elbow_and_c_ind_test' + fmt + '.jpg')
 plt.show()

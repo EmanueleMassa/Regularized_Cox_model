@@ -28,9 +28,9 @@ data_gen_process = surv_models(A0, beta0, phi0, rho0, tau1, tau2, model)
 gauss_process = gauss_model(theta0, phi0, rho0, tau1, tau2, model)
 
 #lambda values  
-values = np.exp(np.linspace(np.log(10.0), np.log(1.0), 100))
+values = np.exp(np.linspace(np.log(10.0), np.log(0.5), 100))
 
-for zeta in [4.0, 2.0]:
+for zeta in [4.0]:
     #number of observations
     n = int(p / zeta)
     for ratio in [1.0, 0.95, 0.75]:
