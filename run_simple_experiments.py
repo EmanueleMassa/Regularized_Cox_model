@@ -13,7 +13,7 @@ zeta = 2.0
 #number of covariates
 n = int(p / zeta)
 #sparsity
-delta = 0.01
+delta = 0.005
 #signal strength 
 theta0 = 1.0
 
@@ -36,7 +36,7 @@ gauss_process = gauss_model(theta0, phi0, rho0, tau1, tau2, model)
 #lambda values  
 values = np.exp(np.linspace(np.log(10.0), np.log(0.9), 100))
 #l1_ratio
-ratio = 0.75
+ratio = 0.95
 
 def run_sim_simple(p, n, values, ratio, GM, method, m, parallel_flag = False):
     def experiment(counter, GM, cox_m, method, n):
@@ -73,7 +73,7 @@ def run_sim_simple(p, n, values, ratio, GM, method, m, parallel_flag = False):
         print('total elapsed time = ' + str((big_toc-big_tic)/60))
 
     data = {
-        'alphas' : values,
+        'vals' : values,
         'w_mean' : np.mean(w, axis = 0),
         'w_std' : np.std(w, axis = 0),
         'v_mean' : np.mean(v, axis = 0),
@@ -82,7 +82,7 @@ def run_sim_simple(p, n, values, ratio, GM, method, m, parallel_flag = False):
     df = pd.DataFrame(data)
     return df
 
-sim = run_sim_simple(p, n, values, ratio, data_gen_process, method, 20, parallel_flag = False)
+sim = run_sim_simple(p, n, values, ratio, data_gen_process, method, 20, parallel_flag = True)
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio) 
 fmt = fmt + '_delta' + "{:.3f}".format(delta)
 sim.to_csv('data/simple_sim' + fmt + '_method_'+ method + '.csv', index = False)

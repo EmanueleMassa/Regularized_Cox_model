@@ -5,7 +5,7 @@ import pandas as pd
 
 zeta = 2.0
 theta0 = 1.0
-ratio = 0.75
+ratio = 0.95
 delta = 0.005
 fmt = '_zeta'+"{:.2f}".format(zeta) +'_l1_ratio'+"{:.2f}".format(ratio)+ '_delta' + "{:.3f}".format(delta)
 method = 'amp'

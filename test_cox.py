@@ -29,7 +29,7 @@ tau1 = 1.0
 tau2 = 2.0
 mu0 = np.zeros(p)
 vals = np.exp(np.linspace(np.log(10.0), np.log(0.9), 100))
-ratio = 1.0
+ratio = 0.75
 
 beta0, A0, n = configuration_AMP(p, zeta, nu, theta0)
 

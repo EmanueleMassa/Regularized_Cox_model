@@ -39,18 +39,20 @@ def na_est(c, elp):
             ch[i] = ch[i] + 1.0/R
     return ch
 
-
+# @njit
 def c_index(t, c, lp):
     den = 0 
     c_ind = 0
-    gamma_n = np.sqrt(np.mean(lp**2))
-    if(gamma_n <1.0e-5):
-        return 0.5
-    for i in range(len(t)):
-        a = c * np.array(t < t[i], int)
-        den = den + np.mean(a)
-        c_ind = c_ind + np.mean( a * np.array(lp > lp[i], int))
-    return c_ind / den
+    if(max(np.abs(lp))<1.0e-2):
+        hc = 0.5 
+    else:
+        elp = np.exp(lp)
+        for i in range(len(t)):
+            a = c * np.array(t < t[i], int)
+            den = den + np.mean(a)
+            c_ind = c_ind + np.mean( a * np.array(elp > elp[i], int))
+        hc = c_ind / den 
+    return hc
 
 def breslow_est(c, elp):
     n = len(elp)
