@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-zeta = 4.0
+zeta = 2.0
 theta0 = 1.0
 ratio = 0.75
 delta = 0.005
